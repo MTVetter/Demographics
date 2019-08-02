@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width"/>
+    <title>H-GAC Demographics</title>
+
+    <link rel="stylesheet" href="https://js.arcgis.com/4.12/esri/themes/light/main.css">
+    <link rel="stylesheet" href="dist/style/main.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script defer href="https://use.fontawesome.com/releases/v5.9.0/js/all.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
+  </head>
+
+  <body>
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <nav id="sidebar">
+            <div class="sidebar-header">
+                <div class="smallLogo">
+                    <a href="http://www.h-gac.com/interactive-web-applications/default.aspx" target="_blank">
+                      <img title="H-GAC Demographic Explorer" width="75px" src="dist/img/HGAC.png" alt="HGAC Icon">
+                    </a>
+                </div>
+            </div>
+            <ul class="list-unstyled components">
+                <li panel-target="layers">
+                  <a href="#">
+                    <i class="far fa-check-square" style="color: #ffffff"></i>
+                    <span class="liLabel">Layers</span>
+                  </a>
+                  <span class="arrow-left"></span>
+                </li>
+                <li panel-target="legend">
+                  <a href="#">
+                    <i class="far fa-list-alt" style="color: #ffffff"></i>
+                    <span class="liLabel">Legend</span>
+                  </a>
+                  <span class="arrow-left"></span>
+                </li>
+                <li panel-target="query">
+                  <a href="#">
+                    <i class="fas fa-filter" style="color: #ffffff"></i>
+                    <span class="liLabel">Query</span>
+                  </a>
+                  <span class="arrow-left"></span>
+                </li>
+                <li panel-target="report">
+                  <a href="#">
+                    <i class="far fa-clipboard" style="color: #ffffff"></i>
+                    <span class="liLabel">Report</span>
+                  </a>
+                  <span class="arrow-left"></span>
+                </li>
+                <li panel-target="map">
+                  <a href="#">
+                    <i class="far fa-map" style="color: #ffffff"></i>
+                    <span class="liLabel">Visual Maps</span>
+                  </a>
+                  <span class="arrow-left"></span>
+                </li>
+                <li panel-target="about">
+                  <a href="#">
+                    <i class="fas fa-info" style="color: #ffffff"></i>
+                    <span class="liLabel">About</span>
+                  </a>
+                  <span class="arrow-left"></span>
+                </li>
+                <li panel-target="help">
+                  <a href="#">
+                    <i class="fas fa-question" style="color: #ffffff"></i>
+                    <span class="liLabel">Help</span>
+                  </a>
+                  <span class="arrow-left"></span>
+                </li>
+            </ul>
+        </nav>
+        <div id="content">
+            <div class="panelDiv" panel-id="layers">
+              <div class="panelHeader">
+                <span class="panelHeaderText">Additional Layers</span>
+                <a class="closePanel" href="#">
+                  <i class="glyphicon glyphicon-remove"></i>
+                </a>
+              </div>
+              <span style="margin-top: 10px; font-weight: bold; margin-bottom: 10px;">Select any of the items from the list to add to the map.</span>
+              <div id="layerList"></div>
+            </div>
+            <div class="panelDiv" panel-id="legend">
+              <div class="panelHeader">
+                <span class="panelHeaderText">Legend</span>
+                <a class="closePanel" href="#">
+                  <i class="glyphicon glyphicon-remove"></i>
+                </a>
+              </div>
+              <div id="legendList"></div>
+            </div>
+            <div class="panelDiv" panel-id="query">
+              <div class="panelHeader">
+                <span class="panelHeaderText">Query Layers</span>
+                <a class="closePanel" href="#">
+                  <i class="glyphicon glyphicon-remove"></i>
+                </a>
+              </div>
+              <span style="margin-top: 10px; font-weight: bold; margin-bottom: 10px;">Select a boundary type then select a value.</span>
+              <div id="queryList">
+                <p>Select a boundary:</p>
+                <select id="boundaryType">
+                  <option value="BlockGroups">Block Groups</option>
+                  <option value="CensusTracts">Census Tracts</option>
+                  <option value="County" selected>Counties</option>
+                </select>
+                <br /><br />
+                <p>Select a value:</p>
+                <select id="countValueType">
+                  <option value="Austin">Austin</option>
+                  <option value="Brazoria">Brazoria</option>
+                  <option value="Chambers">Chambers</option>
+                  <option value="Colorado">Colorado</option>
+                  <option value="FortBend">Fort Bend</option>
+                  <option value="Galveston">Galveston</option>
+                  <option value="Harris">Harris</option>
+                  <option value="Liberty">Liberty</option>
+                  <option value="Matagorda">Matagorda</option>
+                  <option value="Montgomery">Montgomery</option>
+                  <option value="Walker">Walker</option>
+                  <option value="Waller">Waller</option>
+                  <option value="Wharton">Wharton</option>
+                </select>
+                <select id="bgValueType"></select>
+                <select id="ctValueType"></select>
+                <br /><br /><br /><br />
+                <button class="btn btn-success btn-lg btn-block" id="queryResults">Apply Query</button>
+                <button class="btn btn-default btn-lg btn-block" id="clearResults">Clear Query</button>
+              </div>
+            </div>
+            <div class="panelDiv" panel-id="report">
+              <div class="panelHeader">
+                <span class="panelHeaderText">Generate a Report</span>
+                <a class="closePanel" href="#">
+                  <i class="glyphicon glyphicon-remove"></i>
+                </a>
+              </div>
+              <div id="reportList">
+                <div id="optionsDiv">
+                  <h4>Select a boundary for the Report:</h4>
+                  <select id="boundary">
+                    <option value="BlockGroups_1">Block Groups</option>
+                    <option value="CensusTracts_1">Census Tracts</option>
+                    <option value="County_1" selected>Counties</option>
+                  </select>
+                  <br /><br />
+                  <h4>Select an unique area for the Report:</h4>
+                  <select id="countyAttSelect">
+                    <option value="Austin">Austin</option>
+                    <option value="Brazoria">Brazoria</option>
+                    <option value="Chambers">Chambers</option>
+                    <option value="Colorado">Colorado</option>
+                    <option value="FortBend">Fort Bend</option>
+                    <option value="Galveston">Galveston</option>
+                    <option value="Harris">Harris</option>
+                    <option value="Liberty">Liberty</option>
+                    <option value="Matagorda">Matagorda</option>
+                    <option value="Montgomery">Montgomery</option>
+                    <option value="Walker">Walker</option>
+                    <option value="Waller">Waller</option>
+                    <option value="Wharton">Wharton</option>
+                  </select>
+                  <select id="bgAttSelect"></select>
+                  <select id="ctAttSelect"></select>
+                  <br />
+                  <button class="btn btn-success btn-block" id="doBtn">Run</button>
+                  <button class="btn btn-block" id="export">Export Report</button>
+                </div>
+                <br />
+                <div id="grid"></div>
+                <div id="agegrid"></div>
+                <div id="cargrid"></div>
+                <div id="educationgrid"></div>
+                <div id="langgrid"></div>
+                <div id="incomegrid"></div>
+                <div id="populationgrid"></div>
+              </div>
+            </div>
+            <div class="panelDiv" panel-id="map">
+              <div class="panelHeader">
+                <span class="panelHeaderText">Visual Maps</span>
+                <a class="closePanel" href="#">
+                  <i class="glyphicon glyphicon-remove"></i>
+                </a>
+              </div>
+              <div id="visualMap">
+                <div id="optionsDiv">
+                  <h4>Resymbolize either Counties, Block Groups, or Census Tracts based on certain fields.</h4>
+                  <br />
+                  <h5>Select a category to Visualize:</h5>
+                  <select id="category">
+                    <option value="0">--Select a Category--</option>
+                    <option value="1">Population by Race</option>
+                    <option value="2">Population by Age</option>
+                    <option value="3">Household Income</option>
+                    <option value="4">Education</option>
+                    <option value="5">Transportation</option>
+                    <option value="6">Housing</option>
+                    <option value="7">Poverty</option>
+                    <option value="8">Travel to Work</option>
+                    <option value="9">Language</option>
+                    <option value="10">Car Ownership</option>
+                    <option value="11">Unemployment</option>
+                  </select>
+                  <br />
+                  <h5>Select a field:</h5>
+                  <select id="placeHolder">
+                    <option value="placeHolder">--Select a Field--</option>
+                  </select>
+                  <select id="raceField-select">
+                    <option value="Pop_White" selected>White</option>
+                    <option value="Pop_Black">Black</option>
+                    <option value="Pop_Hispanic">Hispanic</option>
+                    <option value="Pop_Asian">Asian</option>
+                    <option value="Pop_Other">Other</option>
+                  </select>
+                  <select id="ageField-select">
+                    <option value="Age_Under_5" selected>Under 5</option>
+                    <option value="Age_5to17">5 to 17</option>
+                    <option value="Age_18to34">18 to 34</option>
+                    <option value="Age_35to64">35 to 64</option>
+                    <option value="Age_65plus">65 and Older</option>
+                  </select>
+                  <select id="householdField-select">
+                    <option value="Inc_Below_25" selected>Income Below 25K</option>
+                    <option value="Inc_25To50">Income 25K - 50K</option>
+                    <option value="Inc_50To100">Income 50K - 100K</option>
+                    <option value="Inc_Above_100">Income Above 100K</option>
+                    <option value="Inc_HH_Median">Median Household Income</option>
+                  </select>
+                  <select id="educationField-select">
+                    <option value="Edu_No_High_School" selected>No High School Education</option>
+                    <option value="Edu_High_School">High School Only</option>
+                    <option value="Edu_Associate">Associate's Degree</option>
+                    <option value="Edu_Bachelors">Bachelor's Degree</option>
+                    <option value="Edu_Graduate">Graduate Degree</option>
+                  </select>
+                  <select id="transportationField-select">
+                    <option value="Mot_Carpool" selected>Carpool</option>
+                    <option value="Mot_Drove_Alone">Drive Alone</option>
+                    <option value="Mot_Other">Other</option>
+                    <option value="Mot_Pedbike">Bicycle</option>
+                    <option value="Mot_Telework">Telework</option>
+                    <option value="Mot_Transit">Public Transit</option>
+                  </select>
+                  <select id="housingField-select">
+                    <option value="H_Owner" selected>Home Owner</option>
+                    <option value="H_Renter">Renter</option>
+                    <option value="Med_Hu_val">Median House Value</option>
+                  </select>
+                  <select id="povertyField-select">
+                    <option value="Pov_Above" selected>Above Poverty Rate</option>
+                    <option value="Pov_Below">Below Poverty Rate</option>
+                    <option value="Pov_Rate">Poverty Rate</option>
+                  </select>
+                  <select id="travelField-select">
+                    <option value="Ttw_Below_5" selected>Travel Time Under 5 mins</option>
+                    <option value="Ttw_5To15">Travel Time 5 to 15 mins</option>
+                    <option value="Ttw_15To30">Travel Time 15 to 30</option>
+                    <option value="Ttw_30To60">Travel Time 30 to 60 mins</option>
+                    <option value="Ttw_60Plus">Travel Time Over 60 mins</option>
+                    <option value="M_Travtime">Mean Travel Time to Work</option>
+                  </select>
+                  <select id="languageField-select">
+                    <option value="Lang_No_Eng" selected>Speaks No English</option>
+                    <option value="Lang_Eng_Not_Well">Speaks English Not Well</option>
+                    <option value="Lang_Eng_Well">Speaks English Well</option>
+                    <option value="Lang_Eng_Very_Well">Speaks Engish Very Well</option>
+                    <option value="Lang_Eng_Only">Speaks English Only</option>
+                  </select>
+                  <select id="autoField-select">
+                    <option value="Auto_0_Car" selected>Doesn't Own a Car</option>
+                    <option value="Auto_1_Car">Owns 1 Car</option>
+                    <option value="Auto_2_Car">Owns 2 Cars</option>
+                    <option value="Auto_3_Car">Owns 3 Cars</option>
+                    <option value="Auto_4Plus_Car">Owns 4 or more Cars</option>
+                  </select>
+                  <select id="unemployField-select">
+                    <option value="Unemp_Rate">Unemployment Rate</option>
+                  </select>
+                  <br />
+                  <h5>Classification:</h5>
+                  <select id="class-select">
+                    <option value="equal-interval">Equal Interval</option>
+                    <option value="quantile" selected>Quantile</option>
+                    <option value="natural-breaks">Natural Breaks</option>
+                    <option value="standard-deviation">Standard Deviation</option>
+                  </select>
+                  <br />
+                  <h5>Select a Boundary Layer to Display:</h5>
+                  <select id="boundaryDecision">
+                    <option value="county">County</option>
+                    <option value="censusBlocks">Block Groups</option>
+                    <option value="censusTracts">Census Tracts</option>
+                  </select>
+                  <br /><br />
+                  <button class="btn btn-success btn-block" id="classBtn">Run</button>
+                  <button class="btn btn-block" id="clearBtn">Clear</button>
+                </div>
+              </div>
+            </div>
+            <div class="panelDiv" panel-id="about">
+              <div class="panelHeader">
+                <span class="panelHeaderText">About</span>
+                <a class="closePanel" href="#">
+                  <i class="glyphicon glyphicon-remove"></i>
+                </a>
+              </div>
+              <div id="info">
+                The Houston-Galveston Area Council Demographic Explorer shows demographic data from the latest American Community Survey (ACS). The data includes cities,
+                counties, Census Tracts, Census Block Groups, Zip Code, Independent School Districts (ISDs), Congressional Districts, and Opportunity Zones.
+              </div>
+              <br />
+              <div id="legal">
+                <b>Disclaimer:</b> This application is intended to give an overview of the demographics for different boundary types. The forecast results are experimential
+                and preliminary; subject to change and revisions in subsequent versions. This product is for informational purposes and may not have been prepared for or be
+                suitable for legal, engineering, or surveying purposes. It does not represent an on-the-ground survey and represents only the approximate relative location
+                of property boundaries. Mapping may not reflect on the ground conditions. The Houston-Galveston Area Council makes no further claims as to the accuracy or
+                reliability of the data, and neither assumes, nor will accept liability for their use. Use or reproduction of the data without acknowledging the Houston-Galveston
+                Area Council as the source is strictly prohibited.
+              </div>
+            </div>
+            <div class="panelDiv" panel-id="help">
+              <div class="panelHeader">
+                <span class="panelHeaderText">Help</span>
+                <a class="closePanel" href="#">
+                  <i class="glyphicon glyphicon-remove"></i>
+                </a>
+              </div>
+              <div class="panelContent">
+                <h3>Basic Map Navigation</h3>
+                <hr>
+                <div class="helpSection">
+                  <h4>Pan:</h4>
+                  <ul>
+                    <li>Click and drag the mouse</li>
+                    <li>Use the keyboard arrow keys</li>
+                  </ul>
+                  <hr>
+                  <h4>Zoom:</h4>
+                  <ul>
+                    <li>Click the zoom buttons</li>
+                    <li>Scroll using the mouse wheel</li>
+                    <li>Hold SHIFT and drag the mouse</li>
+                  </ul>
+                  <hr>
+                  <h4>Home:</h4>
+                  <ul>
+                    <li>Click <img src="dist/img/home.PNG"> to return to the default map view</li>
+                  </ul>
+                  <hr>
+                  <h4>Basemap Controls:</h4>
+                  <ul>
+                    <li>Click <img src="dist/img/basemap.PNG"> to change the basemap</li>
+                  </ul>
+                  <hr>
+                </div>
+              </div>
+            </div>
+        </div>
+        <div id="container">
+            <div id="viewDiv"></div>
+            <div id="bottomBar">
+              <ul class="list-unstyled components">
+                <li panel-target="layers">
+                  <a href="#">
+                    <i class="far fa-check-square"></i>
+                    Layers
+                  </a>
+                  <span class="arrow-left"></span>
+                </li>
+                <li panel-target="legend">
+                  <a href="#">
+                    <i class="far fa-list-alt"></i>
+                    Legend
+                  </a>
+                  <span class="arrow-left"></span>
+                </li>
+                <li panel-target="query">
+                  <a href="#">
+                    <i class="fas fa-filter"></i>
+                    Query
+                  </a>
+                  <span class="arrow-left"></span>
+                </li>
+                <li panel-target="report">
+                  <a href="#">
+                    <i class="far fa-clipboard"></i>
+                    Report
+                  </a>
+                  <span class="arrow-left"></span>
+                </li>
+                <li panel-target="map">
+                  <a href="#">
+                    <i class="far fa-map"></i>
+                    Visual Maps
+                  </a>
+                  <span class="arrow-left"></span>
+                </li>
+                <li panel-target="about">
+                  <a href="#">
+                    <i class="fas fa-info"></i>
+                    About
+                  </a>
+                  <span class="arrow-left"></span>
+                </li>
+                <li panel-target="help">
+                  <a href="#">
+                    <i class="fas fa-question"></i>
+                    Help
+                  </a>
+                  <span class="arrow-left"></span>
+                </li>
+              </ul>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.js"></script>
+    <script src="https://js.arcgis.com/4.12"></script>
+    <!-- <script type="text/javascript" src="src/js/main.js"></script> -->
+    <script type="text/javascript" src="dist/js/main.min.js"></script>
+  </body>
+</html>
